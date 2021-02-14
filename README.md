@@ -37,13 +37,10 @@ The project uses [HardHat](https://hardhat.org/), so all additional methods and 
 For UNIT tests run: <br>
 `npm run test`
 
-
 ### Deploy
 
-Before running deployment save the project wallet address, who should be the owner and receive mock tokens. For saving that address open `scripts/deploy.[network].js` file and save `PROJECT_OWNER` to real address. For production deployment als ogo to `toll-bridge-contract/hardhat.config.js` file and save your private key on `PRODUCTION_PRIVATE_KEY`.<br>
-
-For reploy run: <br>
-`npx hardhat run scripts/deploy.[NETWORK].js --network [NETWORK]`
+Before running deployment please check the `.env.example` file, copy it, rename to `.env` and fill all values there. 2 networks are supported now, mainnet and goerli. For deploy run: <br>
+`npm run deploy:[NETWORK]`
 
 
 #### Verification on Etherscan
