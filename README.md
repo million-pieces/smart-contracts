@@ -15,10 +15,10 @@ World, NFT, PIECE, Auction and rest smart contracts of Million Pieces applicatio
 
 |   Contract name            | Address                                       |
 |:---------------------------|:----------------------------------------------|
-| NFT address                | N/A     |
-| PIECE address              | N/A     |
-| Auction address            | N/A     |
-| Airdrop address            | N/A     |
+| NFT address                | [0x2E95e1c00F26858eb31bC5772df69805Ec9d3DDE](https://goerli.etherscan.io/address/0x2E95e1c00F26858eb31bC5772df69805Ec9d3DDE)     |
+| PIECE address              | [0x43E24bd6e4c233762caD43BD129ADc1f0Dca89a5](https://goerli.etherscan.io/address/0x43E24bd6e4c233762caD43BD129ADc1f0Dca89a5)     |
+| Auction address            | [0xBffE4d435AAE5Db77209A2684C8366878743382C](https://goerli.etherscan.io/address/0xBffE4d435AAE5Db77209A2684C8366878743382C)     |
+| Airdrop address            | [0x1D6a65a9B2332dA997bC18583CECd9DA0bF47a05](https://goerli.etherscan.io/address/0x1D6a65a9B2332dA997bC18583CECd9DA0bF47a05)     |
 
 
 # Installation and Setup

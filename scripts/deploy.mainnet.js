@@ -44,9 +44,21 @@ async function main() {
   await millionPieces.renounceRole(DEFAULT_ADMIN_ROLE, PRODUCTION_WALLET);
   console.log("Deployer role renounced!");
 
+  // Deploy PIECE contract
+  const pieceToken = await PieceToken.deploy(ADMIN_ADDRESS);
+  await millionPieces.deployed();
+  console.log("Piece contract is done!");
+
+  // Deploy Airdrop contract
+  const airdrop = await Airdrop.deploy();
+  await airdrop.deployed();
+  console.log("Airdrop contract is done!");
+
   console.log("--------------")
   console.log("MillionPieces NFT address:", millionPieces.address);
   console.log("Auction address:", auction.address);
+  console.log("PIECE address:", pieceToken.address);
+  console.log("Airdrop address:", airdrop.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
