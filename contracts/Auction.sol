@@ -20,7 +20,7 @@ contract Auction is Ownable {
 
     event NewSinglePurchase(address purchaser, address receiver, uint256 tokenId, uint256 weiAmount);
     event NewBulkPurchase(address purchaser, address[] receivers, uint256[] tokenIds, uint256 ethSent);
-    event BigSegmentCreated(address[] receivers, uint256[] tokenIds);
+    event BigSegmentCreated(address[] receivers, uint256[] tokenIds, uint256[] amountsPaid);
 
     constructor(
       address _millionPieces,
@@ -40,9 +40,10 @@ contract Auction is Ownable {
 
     function mingBig(
       address[] calldata receivers,
-      uint256[] calldata tokenIds
+      uint256[] calldata tokenIds,
+      uint256[] calldata amountsPaid
     ) external onlyOwner {
-      _mintBig(receivers, tokenIds);
+      _mintBig(receivers, tokenIds, amountsPaid);
     }
 
     function changeFundAddress(address payable newFund) external onlyOwner {
@@ -68,10 +69,10 @@ contract Auction is Ownable {
     //  INTERNAL
     //  -------------------
 
-    function _mintBig(address[] memory receivers, uint256[] memory tokenIds) private {
+    function _mintBig(address[] memory receivers, uint256[] memory tokenIds, uint256[] memory amountsPaid) private {
       uint256 tokensCount = tokenIds.length;
       require(tokensCount > 0, "_mintBig: Arrays should bigger 0!");
-      require(tokensCount == receivers.length, "_mintBig: Arrays should be equal to each other!");
+      require(tokensCount == receivers.length && receivers.length == amountsPaid.length, "_mintBig: Arrays should be equal to each other!");
 
       for (uint256 i = 0; i < tokensCount; i++) {
         require(_isValidBigId(tokenIds[i]), "mingBigSegments: Invalid token ID");
@@ -81,7 +82,7 @@ contract Auction is Ownable {
       }
 
       // Emit big segments purchase event
-      emit BigSegmentCreated(receivers, tokenIds);
+      emit BigSegmentCreated(receivers, tokenIds, amountsPaid);
     }
 
     function _buySingle(address receiver, uint256 tokenId) private {
