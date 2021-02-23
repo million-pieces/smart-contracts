@@ -15,10 +15,10 @@ World, NFT, PIECE, Auction and rest smart contracts of Million Pieces applicatio
 
 |   Contract name            | Address                                       |
 |:---------------------------|:----------------------------------------------|
-| NFT address                | [0x2E95e1c00F26858eb31bC5772df69805Ec9d3DDE](https://goerli.etherscan.io/address/0x2E95e1c00F26858eb31bC5772df69805Ec9d3DDE)     |
-| PIECE address              | [0x43E24bd6e4c233762caD43BD129ADc1f0Dca89a5](https://goerli.etherscan.io/address/0x43E24bd6e4c233762caD43BD129ADc1f0Dca89a5)     |
-| Auction address            | [0xBffE4d435AAE5Db77209A2684C8366878743382C](https://goerli.etherscan.io/address/0xBffE4d435AAE5Db77209A2684C8366878743382C)     |
-| Airdrop address            | [0x1D6a65a9B2332dA997bC18583CECd9DA0bF47a05](https://goerli.etherscan.io/address/0x1D6a65a9B2332dA997bC18583CECd9DA0bF47a05)     |
+| NFT address                | [0x58ADD7e59b348e3607837FAD6f2a7fC8CA144685](https://goerli.etherscan.io/address/0x58ADD7e59b348e3607837FAD6f2a7fC8CA144685)     |
+| PIECE address              | [0x349943c818784A6aA9E7586dc94303FAb14768a2](https://goerli.etherscan.io/address/0x349943c818784A6aA9E7586dc94303FAb14768a2)     |
+| Auction address            | [0xf0FE673787eaa77f0f0ED8E537Db48F9eB82bFA9](https://goerli.etherscan.io/address/0xf0FE673787eaa77f0f0ED8E537Db48F9eB82bFA9)     |
+| Airdrop address            | [0x386be6346dBF3c5bDA1cC48B7048Ce27297b3525](https://goerli.etherscan.io/address/0x386be6346dBF3c5bDA1cC48B7048Ce27297b3525)     |
 
 
 # Installation and Setup

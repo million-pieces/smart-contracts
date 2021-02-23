@@ -42,13 +42,6 @@ contract MillionPieces is ERC721, AccessControl {
         return _availableWorlds[id];
     }
 
-    //  --------------------
-    //  SETTERS PUBLIC
-    //  --------------------
-
-    function burn(uint256 tokenId) external {
-        _burn(tokenId);
-    }
 
     //  --------------------
     //  SETTERS PROTECTED
