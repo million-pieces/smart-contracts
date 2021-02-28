@@ -83,16 +83,10 @@ contract MillionPieces is ERC721, AccessControl {
 
     function safeMint(address to, uint256 tokenId) external {
         require(hasRole(MINTER_ROLE, msg.sender), "safeMint: Unauthorized access!");
-        require(isValidWorldSegment(tokenId), "safeMint: This token unavailable");
+        require(isValidWorldSegment(tokenId), "safeMint: This token unavailable!");
         require(!isSpecialSegment(tokenId), "safeMint: The special segments can not be minted with this method!");
 
-        // api
-        string memory uri = _uriStringConcat(
-            baseURI(),
-            _availableWorlds[tokenId.div(NFTS_PER_WORLD)],
-            '/',
-            _uintToString(tokenId)
-        );
+        string memory uri = _generateTokenUri(tokenId);
 
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
@@ -100,16 +94,10 @@ contract MillionPieces is ERC721, AccessControl {
 
     function safeMintSpecial(address to, uint256 tokenId) external {
         require(hasRole(PRIVILEGED_MINTER_ROLE, msg.sender), "safeMintSpecial: Unauthorized access!");
-        require(tokenId > 0 && tokenId <= _availableWorlds.length.mul(NFTS_PER_WORLD), "safeMintSpecial: This token unavailable");
+        require(isValidWorldSegment(tokenId), "safeMintSpecial: This token unavailable!");
         require(isSpecialSegment(tokenId), "safeMintSpecial: The simple segments can not be minted with this method!");
 
-        // api
-        string memory uri = _uriStringConcat(
-            baseURI(),
-            _availableWorlds[tokenId.div(NFTS_PER_WORLD)],
-            '/',
-            _uintToString(tokenId)
-        );
+        string memory uri = _generateTokenUri(tokenId);
 
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
@@ -118,6 +106,15 @@ contract MillionPieces is ERC721, AccessControl {
     //  --------------------
     //  INTERNAL
     //  --------------------
+
+    function _generateTokenUri(uint256 tokenId) internal view returns (string memory) {
+      return _uriStringConcat(
+          baseURI(),
+          _availableWorlds[tokenId.div(NFTS_PER_WORLD)],
+          '/',
+          _uintToString(tokenId)
+      );
+    }
 
     function _uriStringConcat(string memory _a, string memory _b, string memory _c, string memory _d)
         internal
