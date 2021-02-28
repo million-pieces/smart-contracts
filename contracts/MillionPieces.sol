@@ -16,7 +16,10 @@ contract MillionPieces is ERC721, AccessControl {
     string[] internal _availableWorlds;
 
     uint256 public constant NFTS_PER_WORLD = 10000;
+    uint256 public constant SPECIAL_SEGMENTS_COUNT = 20;
+
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant PRIVILEGED_MINTER_ROLE = keccak256("PRIVILEGED_MINTER_ROLE");
     bytes32 public constant DEVELOPER_ROLE = keccak256("DEVELOPER_ROLE");
 
     event NewWorldCreated(string name);
@@ -36,6 +39,14 @@ contract MillionPieces is ERC721, AccessControl {
 
     function exists(uint256 tokenId) public view returns (bool) {
         return _exists(tokenId);
+    }
+
+    function isValidWorldSegment(uint256 tokenId) public view returns (bool) {
+        return tokenId > 0 && NFTS_PER_WORLD.mul(_availableWorlds.length) >= tokenId;
+    }
+
+    function isSpecialSegment(uint256 tokenId) public pure returns (bool) {
+        return (tokenId % NFTS_PER_WORLD) < SPECIAL_SEGMENTS_COUNT;
     }
 
     function getWorld(uint256 id) public view returns (string memory) {
@@ -72,14 +83,30 @@ contract MillionPieces is ERC721, AccessControl {
 
     function safeMint(address to, uint256 tokenId) external {
         require(hasRole(MINTER_ROLE, msg.sender), "safeMint: Unauthorized access!");
-        require(tokenId > 0 && tokenId <= _availableWorlds.length.mul(NFTS_PER_WORLD), "safeMint: This token unavailable");
-
-        uint256 worldId = tokenId.div(NFTS_PER_WORLD);
+        require(isValidWorldSegment(tokenId), "safeMint: This token unavailable");
+        require(!isSpecialSegment(tokenId), "safeMint: The special segments can not be minted with this method!");
 
         // api
         string memory uri = _uriStringConcat(
             baseURI(),
-            _availableWorlds[worldId],
+            _availableWorlds[tokenId.div(NFTS_PER_WORLD)],
+            '/',
+            _uintToString(tokenId)
+        );
+
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
+    }
+
+    function safeMintSpecial(address to, uint256 tokenId) external {
+        require(hasRole(PRIVILEGED_MINTER_ROLE, msg.sender), "safeMintSpecial: Unauthorized access!");
+        require(tokenId > 0 && tokenId <= _availableWorlds.length.mul(NFTS_PER_WORLD), "safeMintSpecial: This token unavailable");
+        require(isSpecialSegment(tokenId), "safeMintSpecial: The simple segments can not be minted with this method!");
+
+        // api
+        string memory uri = _uriStringConcat(
+            baseURI(),
+            _availableWorlds[tokenId.div(NFTS_PER_WORLD)],
             '/',
             _uintToString(tokenId)
         );
