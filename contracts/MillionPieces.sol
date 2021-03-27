@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: Unlicense
 
-pragma solidity 0.6.6;
+pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./interfaces/IMillionPieces.sol";
 
 
 /**
  * @title MillionPieces
  */
-contract MillionPieces is ERC721, AccessControl {
+contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     using SafeMath for uint256;
 
     string[] internal _availableWorlds;
@@ -27,6 +28,8 @@ contract MillionPieces is ERC721, AccessControl {
     event BaseUriChanged(string uri);
 
     constructor (address developer) public ERC721("MillionPieces", "MP") {
+        require(developer != address(0), "MillionPieces: Developer address can not be empty!");
+
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(DEVELOPER_ROLE, developer);
 
@@ -37,19 +40,19 @@ contract MillionPieces is ERC721, AccessControl {
     //  GETTERS
     //  --------------------
 
-    function exists(uint256 tokenId) public view returns (bool) {
+    function exists(uint256 tokenId) public override view returns (bool) {
         return _exists(tokenId);
     }
 
-    function isValidWorldSegment(uint256 tokenId) public view returns (bool) {
+    function isValidWorldSegment(uint256 tokenId) public override view returns (bool) {
         return tokenId > 0 && NFTS_PER_WORLD.mul(_availableWorlds.length) >= tokenId;
     }
 
-    function isSpecialSegment(uint256 tokenId) public pure returns (bool) {
+    function isSpecialSegment(uint256 tokenId) public override pure returns (bool) {
         return (tokenId % NFTS_PER_WORLD) < SPECIAL_SEGMENTS_COUNT;
     }
 
-    function getWorld(uint256 id) public view returns (string memory) {
+    function getWorld(uint256 id) public override view returns (string memory) {
         return _availableWorlds[id];
     }
 
@@ -58,14 +61,14 @@ contract MillionPieces is ERC721, AccessControl {
     //  SETTERS PROTECTED
     //  --------------------
 
-    function createWorld(string calldata name) external {
+    function createWorld(string calldata name) external override {
         require(hasRole(DEVELOPER_ROLE, msg.sender), "createWorld: Unauthorized access!");
 
         _availableWorlds.push(name);
         emit NewWorldCreated(name);
     }
 
-    function setTokenURI(uint256 tokenId, string calldata uri) external {
+    function setTokenURI(uint256 tokenId, string calldata uri) external override {
         require(hasRole(DEVELOPER_ROLE, msg.sender), "setTokenURI: Unauthorized access!");
 
         _setTokenURI(tokenId, uri);
@@ -73,7 +76,7 @@ contract MillionPieces is ERC721, AccessControl {
         emit TokenUriChanged(tokenId, uri);
     }
 
-    function setBaseURI(string calldata baseURI) external {
+    function setBaseURI(string calldata baseURI) external override {
         require(hasRole(DEVELOPER_ROLE, msg.sender), "setBaseURI: Unauthorized access!");
 
         _setBaseURI(baseURI);
@@ -81,7 +84,7 @@ contract MillionPieces is ERC721, AccessControl {
         emit BaseUriChanged(baseURI);
     }
 
-    function safeMint(address to, uint256 tokenId) external {
+    function safeMint(address to, uint256 tokenId) external override {
         require(hasRole(MINTER_ROLE, msg.sender), "safeMint: Unauthorized access!");
         require(isValidWorldSegment(tokenId), "safeMint: This token unavailable!");
         require(!isSpecialSegment(tokenId), "safeMint: The special segments can not be minted with this method!");
@@ -92,7 +95,7 @@ contract MillionPieces is ERC721, AccessControl {
         _setTokenURI(tokenId, uri);
     }
 
-    function safeMintSpecial(address to, uint256 tokenId) external {
+    function safeMintSpecial(address to, uint256 tokenId) external override {
         require(hasRole(PRIVILEGED_MINTER_ROLE, msg.sender), "safeMintSpecial: Unauthorized access!");
         require(isValidWorldSegment(tokenId), "safeMintSpecial: This token unavailable!");
         require(isSpecialSegment(tokenId), "safeMintSpecial: The simple segments can not be minted with this method!");
