@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: Unlicense
 
-pragma solidity 0.6.6;
+pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-
-import "./helpers/SafePIECE.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./interfaces/IPiece.sol";
 import "./interfaces/IMillionPieces.sol";
+import "./interfaces/IPieceBurner.sol";
 
 
-contract PieceBurner {
+contract PieceBurner is IPieceBurner {
   using SafeMath for uint256;
-  using SafePIECE for IPiece;
+  using SafeERC20 for IPiece;
 
   uint256 public constant BATCH_SWAP_LIMIT = 25;
   uint256 public constant PIECE_FOR_ONE_NFT = 1 ether;
@@ -23,6 +23,9 @@ contract PieceBurner {
   event NewBatchSwap(address initiator, address receiver, uint256[] tokenIds);
 
   constructor (address _piece, address _millionPieces) public {
+    require(_piece != address(0), "PieceBurner: Piece address can not be empty!");
+    require(_millionPieces != address(0), "PieceBurner: NFT address can not be empty!");
+
     piece = IPiece(_piece);
     millionPieces = IMillionPieces(_millionPieces);
   }
@@ -31,13 +34,13 @@ contract PieceBurner {
   //  PUBLIC
   //  --------------------
 
-  function swap(uint256 tokenId, address receiver) public {
+  function swap(uint256 tokenId, address receiver) public override {
     _swap(tokenId, msg.sender, receiver);
 
     emit NewSingleSwap(msg.sender, receiver, tokenId);
   }
 
-  function batchSwap(uint256[] memory tokenIds, address receiver) public {
+  function batchSwap(uint256[] memory tokenIds, address receiver) public override {
     _batchSwap(tokenIds, msg.sender, receiver);
 
     emit NewBatchSwap(msg.sender, receiver, tokenIds);
@@ -62,7 +65,7 @@ contract PieceBurner {
 
   function _batchSwap(uint256[] memory tokenIds, address initiator, address receiver) internal {
     uint256 requiredPiece = tokenIds.length;
-    require(requiredPiece > 0 && requiredPiece <= BATCH_SWAP_LIMIT, "_batchSwap: Tokens amount should be bigger 25!");
+    require(requiredPiece > 0 && requiredPiece <= BATCH_SWAP_LIMIT, "_batchSwap: Tokens amount should be less then swap limit!");
 
     // Receive PIECE token from initiator address
     piece.safeTransferFrom(initiator, address(this), requiredPiece.mul(PIECE_FOR_ONE_NFT));

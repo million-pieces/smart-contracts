@@ -40,19 +40,19 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     //  GETTERS
     //  --------------------
 
-    function exists(uint256 tokenId) public override view returns (bool) {
+    function exists(uint256 tokenId) public view override returns (bool) {
         return _exists(tokenId);
     }
 
-    function isValidWorldSegment(uint256 tokenId) public override view returns (bool) {
+    function isValidWorldSegment(uint256 tokenId) public view override returns (bool) {
         return tokenId > 0 && NFTS_PER_WORLD.mul(_availableWorlds.length) >= tokenId;
     }
 
-    function isSpecialSegment(uint256 tokenId) public override pure returns (bool) {
+    function isSpecialSegment(uint256 tokenId) public pure override returns (bool) {
         return (tokenId % NFTS_PER_WORLD) < SPECIAL_SEGMENTS_COUNT;
     }
 
-    function getWorld(uint256 id) public override view returns (string memory) {
+    function getWorld(uint256 id) public view override returns (string memory) {
         return _availableWorlds[id];
     }
 

@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: Unlicense
 
-pragma solidity 0.6.6;
+pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./interfaces/IMillionPieces.sol";
+import "./interfaces/IAuction.sol";
 
 
-contract Auction is Ownable {
+contract Auction is IAuction, Ownable {
   using SafeMath for uint256;
 
   uint256 public constant BATCH_PURCHASE_LIMIT = 25;
@@ -35,14 +36,14 @@ contract Auction is Ownable {
   //  PUBLIC
   //  --------------------
 
-  function buySingle(address receiver, uint256 tokenId) external payable {
+  function buySingle(address receiver, uint256 tokenId) external payable override {
     _buySingle(receiver, tokenId);
   }
 
   function buyMany(
     address[] calldata receivers,
     uint256[] calldata tokenIds
-  ) external payable {
+  ) external payable override {
     _buyMany(receivers, tokenIds);
   }
 
@@ -86,7 +87,8 @@ contract Auction is Ownable {
    * @notice Transfer amount of ETH to the fund address.
    */
   function _transferEth(uint256 amount) private {
-    fund.transfer(amount);
+    (bool success, ) = fund.call{value: amount}("");
+    require(success, "_transferEth: Failed to transfer funds!");
   }
 
   /**
