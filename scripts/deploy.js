@@ -5,12 +5,12 @@ async function main() {
     FUND_ADDRESS,
     ADMIN_ADDRESS,
     DEVELOPER_ADDRESS,
-    PRODUCTION_WALLET
+    DEPLOY_WALLET_ADDRESS
   } = process.env;
 
-  // Constant contract addresses
-  const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-  const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+  // Constant contract addresses (outdated)
+  const USDC_ADDRESS = "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C";
+  const WETH_ADDRESS = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
   const UNISWAP_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 
   // Roles
@@ -19,45 +19,41 @@ async function main() {
 
   const Auction = await hre.ethers.getContractFactory("Auction");
   const MillionPieces = await hre.ethers.getContractFactory("MillionPieces");
+  const PieceToken = await hre.ethers.getContractFactory("Piece");
+  const Airdrop = await hre.ethers.getContractFactory("Airdrop");
   const UniswapOracle = await hre.ethers.getContractFactory("UniswapOracle");
-  console.log("Starting deployment on Mainnet network ...");
+  console.log("Starting deployment ...");
 
   // Deploy MillionPieces NFT contract
   const millionPieces = await MillionPieces.deploy(DEVELOPER_ADDRESS);
   await millionPieces.deployed();
-  console.log("Million Pieces NFT contract is done!");
+  console.log("MillionPieces NFT address:", millionPieces.address);
 
   // // Deploy Auction contract
   const auction = await Auction.deploy(millionPieces.address, FUND_ADDRESS);
   await auction.deployed();
-  console.log("Auction is done!");
+  console.log("Auction address:", auction.address);
 
   // Add auction as a minter
   await millionPieces.grantRole(MINTER_ROLE, auction.address);
-  console.log("Minter added!");
+  console.log("Minter added (auction)!");
 
   // Transfer ownership to admin
   await millionPieces.grantRole(DEFAULT_ADMIN_ROLE, ADMIN_ADDRESS);
   console.log("Admin added!");
 
   // Renounce deployer ownership
-  await millionPieces.renounceRole(DEFAULT_ADMIN_ROLE, PRODUCTION_WALLET);
+  await millionPieces.renounceRole(DEFAULT_ADMIN_ROLE, DEPLOY_WALLET_ADDRESS);
   console.log("Deployer role renounced!");
 
   // Deploy PIECE contract
   const pieceToken = await PieceToken.deploy(ADMIN_ADDRESS);
-  await millionPieces.deployed();
-  console.log("Piece contract is done!");
+  await pieceToken.deployed();
+  console.log("PIECE address:", pieceToken.address);
 
   // Deploy Airdrop contract
   const airdrop = await Airdrop.deploy();
   await airdrop.deployed();
-  console.log("Airdrop contract is done!");
-
-  console.log("--------------")
-  console.log("MillionPieces NFT address:", millionPieces.address);
-  console.log("Auction address:", auction.address);
-  console.log("PIECE address:", pieceToken.address);
   console.log("Airdrop address:", airdrop.address);
 }
 

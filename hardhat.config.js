@@ -7,8 +7,7 @@ require("@nomiclabs/hardhat-etherscan");
 const {
   INFURA_PROJECT_ID,
   ETHERSCAN_API_ID,
-  DEVELOPMENT_PRIVATE_KEY,
-  PRODUCTION_PRIVATE_KEY
+  DEPLOY_WALLET_PRIVATE_KEY
 } = process.env;
 
 module.exports = {
@@ -24,19 +23,23 @@ module.exports = {
   networks: {
     mainnet: {
       url: `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${PRODUCTION_PRIVATE_KEY}`]
+      accounts: [`0x${DEPLOY_WALLET_PRIVATE_KEY}`]
     },
     ropsten: {
       url: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${DEVELOPMENT_PRIVATE_KEY}`]
+      accounts: [`0x${DEPLOY_WALLET_PRIVATE_KEY}`]
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${DEVELOPMENT_PRIVATE_KEY}`]
+      accounts: [`0x${DEPLOY_WALLET_PRIVATE_KEY}`]
+    },
+    kovan: {
+      url: `https://kovan.infura.io/v3/${INFURA_PROJECT_ID}`,
+      accounts: [`0x${DEPLOY_WALLET_PRIVATE_KEY}`]
     },
     goerli: {
       url: `https://goerli.infura.io/v3/${INFURA_PROJECT_ID}`,
-      accounts: [`0x${DEVELOPMENT_PRIVATE_KEY}`]
+      accounts: [`0x${DEPLOY_WALLET_PRIVATE_KEY}`]
     }
   },
   paths: {
