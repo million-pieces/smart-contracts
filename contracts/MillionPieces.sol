@@ -23,7 +23,7 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     bytes32 public constant PRIVILEGED_MINTER_ROLE = keccak256("PRIVILEGED_MINTER_ROLE");
     bytes32 public constant DEVELOPER_ROLE = keccak256("DEVELOPER_ROLE");
 
-    event NewWorldCreated(string name);
+    event NewWorldCreated(uint256 id, string name);
     event TokenUriChanged(uint256 token, string uri);
     event BaseUriChanged(string uri);
 
@@ -32,6 +32,8 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(DEVELOPER_ROLE, developer);
+
+        emit NewWorldCreated(_availableWorlds.length, "The World");
 
         _availableWorlds.push("The World");
     }
@@ -64,8 +66,9 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     function createWorld(string calldata name) external override {
         require(hasRole(DEVELOPER_ROLE, msg.sender), "createWorld: Unauthorized access!");
 
+        emit NewWorldCreated(_availableWorlds.length, name);
+
         _availableWorlds.push(name);
-        emit NewWorldCreated(name);
     }
 
     function setTokenURI(uint256 tokenId, string calldata uri) external override {
@@ -113,7 +116,7 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     function _generateTokenUri(uint256 tokenId) internal view returns (string memory) {
       return _uriStringConcat(
           baseURI(),
-          _availableWorlds[tokenId.div(NFTS_PER_WORLD)],
+          _uintToString(tokenId.div(NFTS_PER_WORLD)),
           '/',
           _uintToString(tokenId)
       );
