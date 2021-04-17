@@ -15,7 +15,7 @@ contract Auction is IAuction, Ownable {
   uint256 public constant PRICE_FOR_SEGMENT = 0.1 ether;
 
   address payable public fund;
-  IMillionPieces public millionPieces;
+  IMillionPieces public immutable millionPieces;
 
   event NewPurchase(address purchaser, address receiver, uint256 tokenId, uint256 weiAmount);
 
@@ -43,6 +43,11 @@ contract Auction is IAuction, Ownable {
     uint256[] calldata tokenIds
   ) external payable override {
     _buyMany(receivers, tokenIds);
+  }
+
+  function changeFundAddress(address payable newFund) external onlyOwner {
+    require(newFund != address(0), "changeFundAddress: Empty fund address!");
+    fund = newFund;
   }
 
   //  --------------------

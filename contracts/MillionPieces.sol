@@ -58,7 +58,6 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
         return _availableWorlds[id];
     }
 
-
     //  --------------------
     //  SETTERS PROTECTED
     //  --------------------
