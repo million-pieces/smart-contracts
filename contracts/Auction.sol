@@ -17,9 +17,7 @@ contract Auction is IAuction, Ownable {
   address payable public fund;
   IMillionPieces public millionPieces;
 
-  event NewSinglePurchase(address purchaser, address receiver, uint256 tokenId, uint256 weiAmount);
-  event NewBatchPurchase(address purchaser, address[] receivers, uint256[] tokenIds, uint256 ethSent);
-  event SpecialSegmentCreated(address[] receivers, uint256[] tokenIds, uint256[] amountsPaid);
+  event NewPurchase(address purchaser, address receiver, uint256 tokenId, uint256 weiAmount);
 
   constructor(
     address _millionPieces,
@@ -59,10 +57,10 @@ contract Auction is IAuction, Ownable {
     _mintNft(receiver, tokenId);
 
     // Emit single segment purchase event
-    emit NewSinglePurchase(msg.sender, receiver, tokenId, msg.value);
+    emit NewPurchase(msg.sender, receiver, tokenId, msg.value);
 
     // Send ETH to fund address
-    _transferEth(msg.value);
+    _transferEth(fund, msg.value);
   }
 
   function _buyMany(address[] memory receivers, uint256[] memory tokenIds) private {
@@ -71,23 +69,34 @@ contract Auction is IAuction, Ownable {
     require(tokensCount == receivers.length, "_buyMany: Arrays should be equal to each other!");
     require(msg.value >= tokensCount.mul(PRICE_FOR_SEGMENT), "_buyMany: Not enough ETH for purchase!");
 
+    uint256 actualPurchasedSegments = 0;
+    uint256 ethPerEachSegment = msg.value.div(tokensCount);
+
     for (uint256 i = 0; i < tokensCount; i++) {
-      // Mint token to receiver
-      _mintNft(receivers[i], tokenIds[i]);
+      // Transfer if tokens not exist, else sent ETH back to purchaser
+      if (_isPurchasable(tokenIds[i])) {
+        // Mint token to receiver
+        _mintNft(receivers[i], tokenIds[i]);
+        actualPurchasedSegments++;
+
+        emit NewPurchase(msg.sender, receivers[i], tokenIds[i], ethPerEachSegment);
+      }
     }
 
-    // Emit multi segments purchase event
-    emit NewBatchPurchase(msg.sender, receivers, tokenIds, msg.value);
-
     // Send ETH to fund address
-    _transferEth(msg.value);
+    _transferEth(fund, actualPurchasedSegments.mul(ethPerEachSegment));
+
+    // Send non-purchased funds to sender address back
+    if (tokensCount != actualPurchasedSegments) {
+      _transferEth(msg.sender, (tokensCount.sub(actualPurchasedSegments)).mul(ethPerEachSegment));
+    }
   }
 
   /**
    * @notice Transfer amount of ETH to the fund address.
    */
-  function _transferEth(uint256 amount) private {
-    (bool success, ) = fund.call{value: amount}("");
+  function _transferEth(address receiver, uint256 amount) private {
+    (bool success, ) = receiver.call{value: amount}("");
     require(success, "_transferEth: Failed to transfer funds!");
   }
 
@@ -96,5 +105,12 @@ contract Auction is IAuction, Ownable {
    */
   function _mintNft(address receiver, uint256 tokenId) private {
     millionPieces.safeMint(receiver, tokenId);
+  }
+
+  /**
+   * @notice Is provided token exists or not.
+   */
+  function _isPurchasable(uint256 tokenId) private view returns (bool) {
+    return !millionPieces.exists(tokenId);
   }
 }
