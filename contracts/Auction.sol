@@ -6,8 +6,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./interfaces/IMillionPieces.sol";
 import "./interfaces/IAuction.sol";
+import "./helpers/ProxyRegistry.sol";
 
 
+/**
+ * @title Auction
+ */
 contract Auction is IAuction, Ownable {
   using SafeMath for uint256;
 
@@ -15,15 +19,18 @@ contract Auction is IAuction, Ownable {
   uint256 public constant PRICE_FOR_SEGMENT = 0.1 ether;
 
   address payable public fund;
+  address public immutable proxyRegistryAddress;
   IMillionPieces public immutable millionPieces;
 
   event NewPurchase(address purchaser, address receiver, uint256 tokenId, uint256 weiAmount);
 
   constructor(
     address _millionPieces,
-    address payable _fund
+    address payable _fund,
+    address _proxyRegistryAddress
   ) public {
     fund = _fund;
+    proxyRegistryAddress = _proxyRegistryAddress;
     millionPieces = IMillionPieces(_millionPieces);
   }
 
@@ -35,6 +42,8 @@ contract Auction is IAuction, Ownable {
   //  --------------------
 
   function buySingle(address receiver, uint256 tokenId) external payable override {
+    require(msg.value >= PRICE_FOR_SEGMENT, "buySingle: Not enough ETH for purchase!");
+
     _buySingle(receiver, tokenId);
   }
 
@@ -42,7 +51,20 @@ contract Auction is IAuction, Ownable {
     address[] calldata receivers,
     uint256[] calldata tokenIds
   ) external payable override {
+    uint256 tokensCount = tokenIds.length;
+    require(tokensCount > 0 && tokensCount <= BATCH_PURCHASE_LIMIT, "buyMany: Arrays should bigger 0 and less then max limit!");
+    require(tokensCount == receivers.length, "buyMany: Arrays should be equal to each other!");
+    require(msg.value >= tokensCount.mul(PRICE_FOR_SEGMENT), "buyMany: Not enough ETH for purchase!");
+
     _buyMany(receivers, tokenIds);
+  }
+
+  function mint(uint256 tokenId, address receiver) public {
+    // Must be sent from the owner proxy or owner.
+    ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
+    require(address(proxyRegistry.proxies(owner())) == msg.sender || owner() == msg.sender, "mint: Not auth!");
+
+    _buySingle(receiver, tokenId);
   }
 
   function changeFundAddress(address payable newFund) external onlyOwner {
@@ -55,9 +77,6 @@ contract Auction is IAuction, Ownable {
   //  -------------------
 
   function _buySingle(address receiver, uint256 tokenId) private {
-    require(msg.value >= PRICE_FOR_SEGMENT, "_buySingle: Not enough ETH for purchase!");
-    require(millionPieces.isValidWorldSegment(tokenId), "_buySingle: Invalid token ID");
-
     // Mint token to receiver
     _mintNft(receiver, tokenId);
 
@@ -70,10 +89,6 @@ contract Auction is IAuction, Ownable {
 
   function _buyMany(address[] memory receivers, uint256[] memory tokenIds) private {
     uint256 tokensCount = tokenIds.length;
-    require(tokensCount > 0 && tokensCount <= BATCH_PURCHASE_LIMIT, "_buyMany: Arrays should bigger 0 and less then max limit!");
-    require(tokensCount == receivers.length, "_buyMany: Arrays should be equal to each other!");
-    require(msg.value >= tokensCount.mul(PRICE_FOR_SEGMENT), "_buyMany: Not enough ETH for purchase!");
-
     uint256 actualPurchasedSegments = 0;
     uint256 ethPerEachSegment = msg.value.div(tokensCount);
 

@@ -51,7 +51,7 @@ contract PieceBurner is IPieceBurner {
   //  --------------------
 
   function _swap(uint256 tokenId, address initiator, address receiver) internal {
-    require(millionPieces.isValidWorldSegment(tokenId), "swap: Invalid token ID");
+    require(millionPieces.isValidArtworkSegment(tokenId), "swap: Invalid token ID");
 
     // Receive PIECE token from initiator address
     piece.safeTransferFrom(initiator, address(this), PIECE_FOR_ONE_NFT);

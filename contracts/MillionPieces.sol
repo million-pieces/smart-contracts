@@ -3,9 +3,9 @@
 pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./interfaces/IMillionPieces.sol";
+import "./helpers/ERC721.sol";
 
 
 /**
@@ -14,28 +14,28 @@ import "./interfaces/IMillionPieces.sol";
 contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     using SafeMath for uint256;
 
-    string[] internal _availableWorlds;
+    string[] internal _availableArtworks;
 
-    uint256 public constant NFTS_PER_WORLD = 10000;
+    uint256 public constant NFTS_PER_ARTWORK = 10000;
     uint256 public constant SPECIAL_SEGMENTS_COUNT = 20;
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PRIVILEGED_MINTER_ROLE = keccak256("PRIVILEGED_MINTER_ROLE");
     bytes32 public constant DEVELOPER_ROLE = keccak256("DEVELOPER_ROLE");
 
-    event NewWorldCreated(uint256 id, string name);
+    event NewArtworkCreated(uint256 id, string name);
     event TokenUriChanged(uint256 token, string uri);
     event BaseUriChanged(string uri);
 
-    constructor (address developer) public ERC721("MillionPieces", "MP") {
+    constructor (address developer, address proxyRegistryAddress) public ERC721("Million Pieces", "MILLION-PIECES", proxyRegistryAddress) {
         require(developer != address(0), "MillionPieces: Developer address can not be empty!");
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(DEVELOPER_ROLE, developer);
 
-        emit NewWorldCreated(_availableWorlds.length, "The World");
+        emit NewArtworkCreated(_availableArtworks.length, "world-in-pieces");
 
-        _availableWorlds.push("The World");
+        _availableArtworks.push("world-in-pieces");
     }
 
     //  --------------------
@@ -46,28 +46,28 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
         return _exists(tokenId);
     }
 
-    function isValidWorldSegment(uint256 tokenId) public view override returns (bool) {
-        return tokenId > 0 && NFTS_PER_WORLD.mul(_availableWorlds.length) >= tokenId;
+    function isValidArtworkSegment(uint256 tokenId) public view override returns (bool) {
+        return tokenId > 0 && NFTS_PER_ARTWORK.mul(_availableArtworks.length) >= tokenId;
     }
 
     function isSpecialSegment(uint256 tokenId) public pure override returns (bool) {
-        return (tokenId % NFTS_PER_WORLD) < SPECIAL_SEGMENTS_COUNT;
+        return (tokenId % NFTS_PER_ARTWORK) < SPECIAL_SEGMENTS_COUNT;
     }
 
-    function getWorld(uint256 id) public view override returns (string memory) {
-        return _availableWorlds[id];
+    function getArtworkName(uint256 id) public view override returns (string memory) {
+        return _availableArtworks[id];
     }
 
     //  --------------------
     //  SETTERS PROTECTED
     //  --------------------
 
-    function createWorld(string calldata name) external override {
-        require(hasRole(DEVELOPER_ROLE, msg.sender), "createWorld: Unauthorized access!");
+    function createArtwork(string calldata name) external override {
+        require(hasRole(DEVELOPER_ROLE, msg.sender), "createArtwork: Unauthorized access!");
 
-        emit NewWorldCreated(_availableWorlds.length, name);
+        emit NewArtworkCreated(_availableArtworks.length, name);
 
-        _availableWorlds.push(name);
+        _availableArtworks.push(name);
     }
 
     function setTokenURI(uint256 tokenId, string calldata uri) external override {
@@ -88,7 +88,7 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
 
     function safeMint(address to, uint256 tokenId) external override {
         require(hasRole(MINTER_ROLE, msg.sender), "safeMint: Unauthorized access!");
-        require(isValidWorldSegment(tokenId), "safeMint: This token unavailable!");
+        require(isValidArtworkSegment(tokenId), "safeMint: This token unavailable!");
         require(!isSpecialSegment(tokenId), "safeMint: The special segments can not be minted with this method!");
 
         string memory uri = _generateTokenUri(tokenId);
@@ -99,7 +99,7 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
 
     function safeMintSpecial(address to, uint256 tokenId) external override {
         require(hasRole(PRIVILEGED_MINTER_ROLE, msg.sender), "safeMintSpecial: Unauthorized access!");
-        require(isValidWorldSegment(tokenId), "safeMintSpecial: This token unavailable!");
+        require(isValidArtworkSegment(tokenId), "safeMintSpecial: This token unavailable!");
         require(isSpecialSegment(tokenId), "safeMintSpecial: The simple segments can not be minted with this method!");
 
         string memory uri = _generateTokenUri(tokenId);
@@ -115,7 +115,7 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     function _generateTokenUri(uint256 tokenId) internal view returns (string memory) {
       return _uriStringConcat(
           baseURI(),
-          _uintToString(tokenId.div(NFTS_PER_WORLD)),
+          _uintToString(tokenId.div(NFTS_PER_ARTWORK)),
           '/',
           _uintToString(tokenId)
       );
