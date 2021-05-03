@@ -6,8 +6,8 @@
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
-    "deploy:mainnet": "npx hardhat run scripts/deploy.mainnet.js --network mainnet",
-    "deploy:goerli": "npx hardhat run scripts/deploy.goerli.js --network goerli"
+    "deploy:mainnet": "npx hardhat run scripts/deploy.js --network mainnet",
+    "deploy:rinkeby": "npx hardhat run scripts/deploy.js --network rinkeby"
   },
   "repository": {
     "type": "git",
