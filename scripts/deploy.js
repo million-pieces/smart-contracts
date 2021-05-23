@@ -13,7 +13,8 @@ async function main() {
   const USDC_ADDRESS = "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C";
   const WETH_ADDRESS = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
   const UNISWAP_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-  const OPENSEA_PROXY = network === "rinkeby" ? "0xa5409ec958c83c3f309868babaca7c86dcb077c1" : "0xf57b2c51ded3a29e6891aba85459d600256cf317"
+
+  const OPENSEA_PROXY = network === "rinkeby" ? "0xf57b2c51ded3a29e6891aba85459d600256cf317" : "0xa5409ec958c83c3f309868babaca7c86dcb077c1"
 
   // Roles
   const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
