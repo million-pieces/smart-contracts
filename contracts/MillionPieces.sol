@@ -86,10 +86,10 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
         emit BaseUriChanged(baseURI);
     }
 
-    function safeMint(address to, uint256 tokenId) external override {
-        require(hasRole(MINTER_ROLE, msg.sender), "safeMint: Unauthorized access!");
-        require(isValidArtworkSegment(tokenId), "safeMint: This token unavailable!");
-        require(!isSpecialSegment(tokenId), "safeMint: The special segments can not be minted with this method!");
+    function mintTo(address to, uint256 tokenId) external override {
+        require(hasRole(MINTER_ROLE, msg.sender), "mintTo: Unauthorized access!");
+        require(isValidArtworkSegment(tokenId), "mintTo: This token unavailable!");
+        require(!isSpecialSegment(tokenId), "mintTo: The special segments can not be minted with this method!");
 
         string memory uri = _generateTokenUri(tokenId);
 
@@ -97,10 +97,10 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
         _setTokenURI(tokenId, uri);
     }
 
-    function safeMintSpecial(address to, uint256 tokenId) external override {
-        require(hasRole(PRIVILEGED_MINTER_ROLE, msg.sender), "safeMintSpecial: Unauthorized access!");
-        require(isValidArtworkSegment(tokenId), "safeMintSpecial: This token unavailable!");
-        require(isSpecialSegment(tokenId), "safeMintSpecial: The simple segments can not be minted with this method!");
+    function mintToSpecial(address to, uint256 tokenId) external override {
+        require(hasRole(PRIVILEGED_MINTER_ROLE, msg.sender), "mintToSpecial: Unauthorized access!");
+        require(isValidArtworkSegment(tokenId), "mintToSpecial: This token unavailable!");
+        require(isSpecialSegment(tokenId), "mintToSpecial: The simple segments can not be minted with this method!");
 
         string memory uri = _generateTokenUri(tokenId);
 
@@ -114,19 +114,18 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
 
     function _generateTokenUri(uint256 tokenId) internal view returns (string memory) {
       return _uriStringConcat(
-          baseURI(),
-          _uintToString(tokenId.div(NFTS_PER_ARTWORK)),
+          _availableArtworks[tokenId.add(1).div(NFTS_PER_ARTWORK)],
           '/',
           _uintToString(tokenId)
       );
     }
 
-    function _uriStringConcat(string memory _a, string memory _b, string memory _c, string memory _d)
+    function _uriStringConcat(string memory _a, string memory _b, string memory _c)
         internal
         pure
         returns (string memory)
     {
-        return string(abi.encodePacked(_a, _b, _c, _d));
+        return string(abi.encodePacked(_a, _b, _c));
     }
 
     function _uintToString(uint256 _i) internal pure returns (string memory _uintAsString) {

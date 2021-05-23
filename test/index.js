@@ -68,7 +68,7 @@ describe("MillionPieces UNIT tests", function() {
     it("- Test developer functions", async () => {
       // Switch to non allowed wallet
       millionPieces = millionPieces.connect(user);
-      const demoUri = "https://api.millionpieces.io";
+      const demoUri = "https://api.millionpieces.io/";
 
       await expectRevert(
         millionPieces.setTokenURI(5, demoUri),
@@ -85,7 +85,7 @@ describe("MillionPieces UNIT tests", function() {
 
       // Check the current state
       let baseUri = await millionPieces.baseURI();
-      expect(baseUri).to.equal("");
+      expect(baseUri).to.equal("https://api.millionpieces.io/");
 
       // Set new base URI
       await millionPieces.setBaseURI(demoUri);

@@ -47,9 +47,11 @@ async function main() {
   await millionPieces.grantRole(DEFAULT_ADMIN_ROLE, ADMIN_ADDRESS);
   console.log("Admin added!");
 
-  // Renounce deployer ownership
-  await millionPieces.renounceRole(DEFAULT_ADMIN_ROLE, DEPLOY_WALLET_ADDRESS);
-  console.log("Deployer role renounced!");
+  if (DEFAULT_ADMIN_ROLE.toLowerCase() !== ADMIN_ADDRESS.toLowerCase()) {
+    // Renounce deployer ownership
+    await millionPieces.renounceRole(DEFAULT_ADMIN_ROLE, DEPLOY_WALLET_ADDRESS);
+    console.log("Deployer role renounced!");
+  }
 
   // Deploy PIECE contract
   const pieceToken = await PieceToken.deploy(ADMIN_ADDRESS);

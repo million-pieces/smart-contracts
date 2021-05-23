@@ -83,6 +83,6 @@ contract PieceBurner is IPieceBurner {
     * @notice Mint simple segment.
     */
   function _mintNft(address receiver, uint256 tokenId) private {
-    millionPieces.safeMint(receiver, tokenId);
+    millionPieces.mintTo(receiver, tokenId);
   }
 }
