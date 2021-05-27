@@ -14,7 +14,7 @@ async function main() {
   const WETH_ADDRESS = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
   const UNISWAP_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 
-  const OPENSEA_PROXY = network === "rinkeby" ? "0xf57b2c51ded3a29e6891aba85459d600256cf317" : "0xa5409ec958c83c3f309868babaca7c86dcb077c1"
+  const OPENSEA_PROXY = network.name === "rinkeby" ? "0xf57b2c51ded3a29e6891aba85459d600256cf317" : "0xa5409ec958c83c3f309868babaca7c86dcb077c1"
 
   // Roles
   const MINTER_ROLE = '0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6';
@@ -47,12 +47,6 @@ async function main() {
   // Transfer ownership to admin
   await millionPieces.grantRole(DEFAULT_ADMIN_ROLE, ADMIN_ADDRESS);
   console.log("Admin added!");
-
-  if (DEFAULT_ADMIN_ROLE.toLowerCase() !== ADMIN_ADDRESS.toLowerCase()) {
-    // Renounce deployer ownership
-    await millionPieces.renounceRole(DEFAULT_ADMIN_ROLE, DEPLOY_WALLET_ADDRESS);
-    console.log("Deployer role renounced!");
-  }
 
   // Deploy PIECE contract
   const pieceToken = await PieceToken.deploy(ADMIN_ADDRESS);
