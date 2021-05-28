@@ -2,9 +2,9 @@
 
 pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./interfaces/IMillionPieces.sol";
+import "./helpers/AccessControl.sol";
 import "./helpers/ERC721.sol";
 
 
@@ -19,20 +19,15 @@ contract MillionPieces is ERC721, IMillionPieces, AccessControl {
     uint256 public constant NFTS_PER_ARTWORK = 10000;
     uint256 public constant SPECIAL_SEGMENTS_COUNT = 20;
 
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    bytes32 public constant PRIVILEGED_MINTER_ROLE = keccak256("PRIVILEGED_MINTER_ROLE");
-    bytes32 public constant DEVELOPER_ROLE = keccak256("DEVELOPER_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER");
+    bytes32 public constant DEVELOPER_ROLE = keccak256("DEVELOPER");
+    bytes32 public constant PRIVILEGED_MINTER_ROLE = keccak256("PRIVILEGED_MINTER");
 
     event NewArtworkCreated(uint256 id, string name);
     event TokenUriChanged(uint256 token, string uri);
     event BaseUriChanged(string uri);
 
-    constructor (address developer, address proxyRegistryAddress) public ERC721("Million Pieces", "MILLION-PIECES", proxyRegistryAddress) {
-        require(developer != address(0), "MillionPieces: Developer address can not be empty!");
-
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(DEVELOPER_ROLE, developer);
-
+    constructor (address proxyRegistryAddress) public ERC721("Million Pieces", "MILLION-PIECES", proxyRegistryAddress) {
         emit NewArtworkCreated(_availableArtworks.length, "world-in-pieces");
 
         _availableArtworks.push("world-in-pieces");

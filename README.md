@@ -11,14 +11,14 @@ World, NFT, PIECE, Auction and rest smart contracts of Million Pieces applicatio
 | Airdrop address            | N/A     |
 
 
-## Goerli:
+## Rinkeby:
 
 |   Contract name            | Address                                       |
 |:---------------------------|:----------------------------------------------|
-| NFT address                | [0x58ADD7e59b348e3607837FAD6f2a7fC8CA144685](https://goerli.etherscan.io/address/0x58ADD7e59b348e3607837FAD6f2a7fC8CA144685)     |
-| PIECE address              | [0x349943c818784A6aA9E7586dc94303FAb14768a2](https://goerli.etherscan.io/address/0x349943c818784A6aA9E7586dc94303FAb14768a2)     |
-| Auction address            | [0xf0FE673787eaa77f0f0ED8E537Db48F9eB82bFA9](https://goerli.etherscan.io/address/0xf0FE673787eaa77f0f0ED8E537Db48F9eB82bFA9)     |
-| Airdrop address            | [0x386be6346dBF3c5bDA1cC48B7048Ce27297b3525](https://goerli.etherscan.io/address/0x386be6346dBF3c5bDA1cC48B7048Ce27297b3525)     |
+| NFT address                | [0x2189D47aACb6934016Ea4e56B088791D8618829a](https://rinekeby.etherscan.io/address/0x2189D47aACb6934016Ea4e56B088791D8618829a)     |
+| PIECE address              | [0x65CD61246B2f739c1f4aACf4Cba8503BcF6Fb6B4](https://rinekeby.etherscan.io/address/0x65CD61246B2f739c1f4aACf4Cba8503BcF6Fb6B4)     |
+| Auction address            | [0xc23767072D1E6F1d3aF7fCbE114cc0C67d8Bc6f3](https://rinekeby.etherscan.io/address/0xc23767072D1E6F1d3aF7fCbE114cc0C67d8Bc6f3)     |
+| Airdrop address            | [0xC70dAA87Fd64A87Eb0B5c88Eac2f7b2c643919A3](https://rinekeby.etherscan.io/address/0xC70dAA87Fd64A87Eb0B5c88Eac2f7b2c643919A3)     |
 
 
 # Installation and Setup
@@ -47,7 +47,7 @@ Before running deployment please check the `.env.example` file, copy it, rename 
 
 After deployment run this commands:<br>
 
-`npx hardhat verify --network [NETWORK_NAME] [NFT_CONTRACT_ADDRESS] "[DEVELOPER_ADDRESS]"` <br>
-`npx hardhat verify --network [NETWORK_NAME] [AUCTION_CONTRACT_ADDRESS] "[NFT_CONTRACT_ADDRESS]" "[FUND_RECEIVER_ADDRESS]"` <br>
+`npx hardhat verify --network [NETWORK_NAME] [NFT_CONTRACT_ADDRESS] "[PROXY_REGISTER_ADDRESS]"` <br>
+`npx hardhat verify --network [NETWORK_NAME] [AUCTION_CONTRACT_ADDRESS] "[NFT_CONTRACT_ADDRESS]" "[FUND_RECEIVER_ADDRESS]" "[PROXY_REGISTER_ADDRESS]"` <br>
 `npx hardhat verify --network [NETWORK_NAME] [PIECE_CONTRACT_ADDRESS] "[TOKEN_RECEIVER_ADDRESS]"` <br>
 `npx hardhat verify --network [NETWORK_NAME] [AIRDROP_CONTRACT_ADDRESS]`
