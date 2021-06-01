@@ -45,6 +45,9 @@ async function main() {
   await millionPieces.grantRole(MINTER_ROLE, auction.address);
   console.log("Minter added (auction)!");
 
+  console.log('The rest will be deployed later')
+  return
+
   // Deploy PIECE contract
   const pieceToken = await PieceToken.deploy(ADMIN_ADDRESS);
   await pieceToken.deployed();
